@@ -34,7 +34,7 @@ pipeline {
                     //        echo "${password} | docker login -u ${username} --password-stdin"
                     //     '''
                     //    sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BUILD_NUMBER}"
-                    }
+                    //}
                 }
             }
             post {
