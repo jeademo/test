@@ -29,7 +29,7 @@ pipeline {
                 mvnw('test')
             }
         }
-
+/*
         stage("Code coverage") {
             steps {
                 gradlew ('jacocoTestReport')
@@ -49,10 +49,10 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Build') {
             steps {
-                gradlew('package')
+                mvnw('package')
             }
         }
 
