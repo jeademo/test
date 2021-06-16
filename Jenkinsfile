@@ -27,10 +27,10 @@ pipeline {
 
             steps {
                 script {
-                    //sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-                    sh "docker images"// | grep \"${env.BRANCH_NAME}-${env.BUILD_NUMBER}\""
+                    sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    sh "docker images | grep \"${env.BRANCH_NAME}-${env.BUILD_NUMBER}\""
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_token') {
-                    //    sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BUILD_NUMBER}"
+                        sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BUILD_NUMBER}"
                     }
                 }
             }
