@@ -1,3 +1,3 @@
-GKE:gke-demo1
+GKE:demo1-cluster-1
 REGION:us-central1
 PROJECT:infra-gke

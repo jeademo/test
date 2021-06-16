@@ -54,17 +54,19 @@ pipeline {
                 stage('dev: Build & push Docker image') {
                     steps {
                         script {
-                            def DockerImage = docker.build("${DOCKER_REG}/${IMAGE_NAME_DEV}")
-                            docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_token') {
-                                DockerImage.push("${env.BUILD_NUMBER}")
-                                DockerImage.push("latest")
+                            sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DEV}:${env.BUILD_NUMBER}"
+                            withCredentials([usernamePassword(credentialsId: 'dockerhub_token', passwordVariable: 'password', usernameVariable: 'username')]){
+                                sh '''
+                                echo "${password} | docker login -u ${username} --password-stdin"
+                                '''
+                                sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DEV}:${env.BUILD_NUMBER}"
                             }
                         }
                     }
                     post {
                         always {
                             script {
-                                sh "docker rmi -f ${DOCKER_REG}/${IMAGE_NAME_DEV}"
+                                sh "docker rmi -f ${DOCKER_REG}/${IMAGE_NAME_DEV}:${env.BUILD_NUMBER}"
                             }
                         }
                     }
@@ -88,17 +90,19 @@ pipeline {
                 stage('prod: Build & push Docker image') {
                     steps {
                         script {
-                            def DockerImage = docker.build("${DOCKER_REG}/${IMAGE_NAME}")
-                            docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_token') {
-                                DockerImage.push("${env.BUILD_NUMBER}")
-                                DockerImage.push("latest")
+                            sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
+                            withCredentials([usernamePassword(credentialsId: 'dockerhub_token', passwordVariable: 'password', usernameVariable: 'username')]){
+                                sh '''
+                                echo "${password} | docker login -u ${username} --password-stdin"
+                                '''
+                                sh "docker push ${DOCKER_REG}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
                             }
                         }
                     }
                     post {
                         always {
                             script {
-                                sh "docker rmi -f ${DOCKER_REG}/${IMAGE_NAME}"
+                                sh "docker rmi -f ${DOCKER_REG}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
                             }
                         }
                     }
@@ -121,7 +125,3 @@ pipeline {
         }
     }
 }
-
-//def mvnw(String... args) {
-//    sh "./mvnw ${args.join(' ')}"
-//}
