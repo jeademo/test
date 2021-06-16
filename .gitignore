@@ -1,7 +1,6 @@
 HELP.md
 .gradle
 build/
-.mvn
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -37,8 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-### jenkinsfile tests ###
-Jenkinsfileori
+### originals for test ###
+*.ori
 
 ### zip ###
 *.zip
