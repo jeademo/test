@@ -18,25 +18,6 @@ pipeline {
     }
 
     stages {        
-/*        stage('Compile') {
-            steps {
-                mvnw('compile')
-            }
-        }
-        
-        stage('Tests') {
-            steps {
-                mvnw ('test')
-            }
-        }
-
-        stage('Build') {
-            steps {
-                mvnw ('package')
-            }
-        }
-*/
-
         stage('Build & push Docker image') {
 
             when {
@@ -46,11 +27,8 @@ pipeline {
 
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker_toke', passwordVariable: 'password', usernameVariable: 'username')]){
-                        sh '''
-                            echo "${password} | docker login -u ${username} --password-stdin"
-                        '''
-                        sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_token') {
                         sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     }
                 }
