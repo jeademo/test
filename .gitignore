@@ -36,8 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-### jenkinsfile tests ###
-Jenkinsfileori
+### originals for test ###
+*.ori
 
 ### zip ###
 *.zip

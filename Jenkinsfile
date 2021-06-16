@@ -9,14 +9,14 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME_DESA = 'desa-demo1'
-        IMAGE_NAME_DEV = 'dev-demo1'
-        IMAGE_NAME = 'demo1'
+        IMAGE_NAME_DESA = 'desa-demo2'
+        IMAGE_NAME_DEV = 'dev-demo2'
+        IMAGE_NAME = 'demo2'
         DOCKER_REG = 'jeatest00000002'
         DOCKER_CRED = 'docker_token'
         GOOGLE_CRED = credentials('gcp_sa')
     }
-
+/*
     stages {        
         stage('Compile') {
             steps {
@@ -24,38 +24,18 @@ pipeline {
             }
         }
         
-        stage('Unit Tests') {
+        stage('Tests') {
             steps {
-                mvnw('test')
-            }
-        }
-/*
-        stage("Code coverage") {
-            steps {
-                gradlew ('jacocoTestReport')
-                    publishHTML (target: [
-                        reportDir: 'build/reports/jacoco/test/html',
-                        reportFiles: 'index.html',
-                        reportName: 'JacocoReport'
-                    ])
-                gradlew ('jacocoTestCoverageVerification')
-            }
-        }
-        
-        stage('SonarQube analysis') {
-            steps {
-                withSonarQubeEnv('sonar-jea') {
-                    gradlew ('sonarqube')
-                }
-            }
-        }
-*/
-        stage('Build') {
-            steps {
-                mvnw('package')
+                mvnw ('test')
             }
         }
 
+        stage('Build') {
+            steps {
+                mvnw ('package')
+            }
+        }
+*/
         stage('Build & push Docker image') {
 
             when {
@@ -65,16 +45,18 @@ pipeline {
 
             steps {
                 script {
-                    def DockerImage = docker.build("${DOCKER_REG}/${IMAGE_NAME_DESA}")
+                    //def DockerImage = docker.build("${DOCKER_REG}/${IMAGE_NAME_DESA}")
+                    sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                         docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_token') {
-                            DockerImage.push("${env.BRANCH_NAME}-${env.BUILD_NUMBER}")
+                            //DockerImage.push("${env.BRANCH_NAME}-${env.BUILD_NUMBER}")
+                        sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                         }
                     }
                 }
             post {
                 always {
                     script {
-                        sh "docker rmi -f ${DOCKER_REG}/${IMAGE_NAME_DESA}"
+                        sh "docker rmi -f ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     }
                 }
             }
