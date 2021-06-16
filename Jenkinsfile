@@ -46,9 +46,11 @@ pipeline {
 
             steps {
                 script {
-                    sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
-                    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'docker_token', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                        sh 'echo "$PASSWORD" | docker login --username "$USERNAME" --password-stdin'
+                    withCredentials([usernamePassword(credentialsId: 'docker_toke', passwordVariable: 'password', usernameVariable: 'username')]){
+                        sh '''
+                            echo "${password} | docker login -u ${username} --password-stdin"
+                        '''
+                        sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                         sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                     }
                 }
