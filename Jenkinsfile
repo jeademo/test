@@ -16,9 +16,9 @@ pipeline {
         DOCKER_CRED = 'docker_token'
         GOOGLE_CRED = credentials('gcp_sa')
     }
-/*
+
     stages {        
-        stage('Compile') {
+/*        stage('Compile') {
             steps {
                 mvnw('compile')
             }
@@ -138,8 +138,6 @@ pipeline {
     }
 }
 
-def mvnw(String... args) {
-    sh "./mvnw ${args.join(' ')}"
-}
-
-//
+//def mvnw(String... args) {
+//    sh "./mvnw ${args.join(' ')}"
+//}
