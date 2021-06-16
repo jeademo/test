@@ -27,14 +27,14 @@ pipeline {
 
             steps {
                 script {
-                    sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BUILD_NUMBER}"
-                    sh "docker images"
-                    //withCredentials([usernamePassword(credentialsId: 'dockerhub_token', passwordVariable: 'password', usernameVariable: 'username')]){
-                    //     sh '''
-                    //        echo "${password} | docker login -u ${username} --password-stdin"
-                    //     '''
+                    sh "s2i build https://github.com/jeademo/test fabric8/s2i-java:latest-java11 ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                    sh "docker images | grep \"${env.BRANCH_NAME}-${env.BUILD_NUMBER}\""
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub_token', passwordVariable: 'password', usernameVariable: 'username')]){
+                         sh '''
+                            echo "${password} | docker login -u ${username} --password-stdin"
+                         '''
                     //    sh "docker push ${DOCKER_REG}/${IMAGE_NAME_DESA}:${env.BUILD_NUMBER}"
-                    //}
+                    }
                 }
             }
             post {
